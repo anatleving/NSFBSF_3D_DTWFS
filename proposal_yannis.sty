@@ -1,0 +1,52 @@
+\usepackage[hidelinks]{hyperref}
+\usepackage{fullpage}
+\usepackage{palatino}
+\usepackage{newpxmath}
+\usepackage[T1]{fontenc}
+%\usepackage{cirl}
+\urlstyle{same}
+\usepackage{colortbl}
+
+\linespread{1.00625}
+\selectfont
+
+%% titles
+\usepackage{titlesec}
+%\usepackage[compact,small]{titlesec}
+%\newcommand{\paragraph}[1]{\vspace{0.25em}\noindent{\bf #1}}
+
+\makeatletter
+\renewcommand\maketitle{
+	{\noindent HCC: Medium:}\vspace{0.5em}\\
+	{\Large \bf \@title}\vspace{0.5em}\\
+	{\large Ioannis Gkioulekas and Keenan Crane, Carnegie Mellon University}
+	}
+\makeatother
+
+% \makeatletter
+% \renewcommand\maketitle{
+%     \begin{center}
+%         {\bf \Large \@title}\\
+% 		\emph{PIs: Ioannis Gkioulekas, Keenan Crane (Carnegie Mellon University)}
+%     \end{center}}
+% \makeatother
+
+%% spacing
+\setlength{\floatsep}{5pt}
+\setlength{\textfloatsep}{5pt}
+\setlength{\abovecaptionskip}{5pt}
+\setlength{\belowcaptionskip}{5pt}
+\setlength{\abovedisplayskip}{1pt}
+\setlength{\belowdisplayskip}{1pt}
+\setlength{\abovedisplayshortskip}{1pt}
+\setlength{\belowdisplayshortskip}{1pt}
+
+%% listings
+\setlist[enumerate]{label=\arabic*.}
+\newenvironment{tight_itemize}{\begin{itemize}[nosep,leftmargin=*]}{\end{itemize}}
+\newenvironment{tight_enumerate}{\begin{enumerate}[nosep,leftmargin=*]}{\end{enumerate}}
+
+%% standard commands
+\graphicspath{{figures/}}
+\newcommand{\igkiou}[1]{{\bf\textcolor{red}{[\emph{IG}: #1]}}}
+

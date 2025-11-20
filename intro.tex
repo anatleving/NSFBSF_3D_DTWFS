@@ -1,0 +1,101 @@
+\begin{center}
+{\bf
+{\small Collaborative Research: ENG:ECCS:EPMD: NSF-BSF:}\vspace{0.05in} \\
+{\fontsize{13.75}{14}\selectfont 3D wavefront shaping for deep tissue imaging}
+}
+\end{center}
+%\vspace{1em}
+\vspace{-0.1in}
+\section{Introduction}\vspace{-0.1cm}
+\label{sec:intro}
+%
+
+Fluorescence imaging has revolutionized biomedical research by enabling the  tagging and visualization of biological components.
+%, allowing researchers to study their function and activity with high specificity. 
+However, the utility of these techniques is currently restricted to superficial layers, typically limited to depths of a few tens of microns. In thicker tissue, imaging is severely confounded by optical scattering. This phenomenon arises from refractive index mismatches between cellular structures and the surrounding medium, which cause photons to deviate from their ballistic trajectories. Consequently, light becomes significantly aberrated after propagating through even short distances, restricting the applicability of high-resolution microscopy to thin, superficial tissue sections~\cite{Kempe:96,Schmitt:94,Adithya1016}.
+
+
+%Of particular interest in this research is the study of mouse embryo development. While at the very early post fertilization days  they are transparent, around the 3rd day they start pre-implantation and Gastrulation stages in which they become increasingly scattering and their internal structure can no longer be studied using a microscope. To access deeper structures one can  only use   ex-vivo fixed  samples and slice them into thin layers, damaging the tissue structure and contaminating the inferred information.
+
+
+Wavefront Shaping (WFS) represents the most promising approach for correcting scattering-induced aberrations in vivo. WFS uses a Spatial Light Modulator (SLM)  to impart a conjugate phase onto the coherent wavefront illuminating the sample. When this compensated wavefront propagates through the tissue, the light is constructively interfered, enabling highly efficient focusing into a diffraction-limited spot. Correspondingly, for the detection path, a correction element placed between the tissue and the sensor can 
+compensate for the tissue's distortion, ensuring that light emerging from a single target point is coherently refocused onto a single detector pixel despite the tissue's aberration.
+WFS is a particularly attractive solution for fluorescence imaging because the correction is executed physically in the optical path, rather than digitally. Fluorescent emission is inherently weak; when scattered photons are spread across numerous sensor pixels, the resultant signal often falls below the noise floor, rendering digital correction algorithms ineffective. WFS overcomes this fundamental limitation by coherently concentrating these limited photons into a single, high-intensity spot. This approach yields a dramatic increase in the Signal-to-Noise Ratio (SNR), thereby overcoming the physical constraint of scattering and enabling high-resolution imaging deep inside biological targets. 
+WFS was recently used by PI Levin’s group to image weak fluorescent neurons  hundreds of microns into scattering brain tissue~\cite{DrorNatureComm24}.
+
+
+
+
+
+In this research, we aim to leverage WFS to  image deep within compact, yet highly scattering, biological systems—objects approximately $100–300\mu m$ in scale, such as early-stage embryos and stem-cell–derived organoids. These complex internal structures are currently inaccessible due to severe multiple scattering.
+
+
+Previous studies utilizing WFS were largely motivated by challenges in neurobiological imaging. While these efforts established the fundamental physical principles of scattering correction, their practical impact has been inherently constrained by several key challenges: rapid speckle decorrelation of active neural tissue, limited access forcing measurement in reflection-only mode, and the reliance on weak fluorescent feedback to calculate correction, often leading to photobleaching prior to convergence.
+
+Early-stage embryos and organoids present a far more favorable optical regime. As these systems lack blood flow or a heartbeat, their scattering structures evolve slowly, minimizing speckle decorrelation; their geometry allows multi-sided transmission measurements; and our approach infers corrections from external coherent light rather than weak fluorescence signal. Together, these advantages create an exceptional opportunity to demonstrate robust WFS in a realistic biological setting and to bridge proof-of-principle optics with practical bioimaging.
+
+%In stark contrast, early-stage embryos and organoids offer a significantly more advantageous optical and dynamical regime. As these systems lack blood flow or a heartbeat, their scattering structure evolves slowly, minimizing speckle decorrelation. Furthermore, their geometry allows for multi-sided access, enabling highly favorable transmission-mode measurements. Crucially, our approach entirely decouples the correction process from fluorescence by inferring the required phase from external, coherent light. This unique combination presents an unprecedented opportunity to demonstrate the full potential of wavefront shaping in a realistic, high-impact biological context, effectively bridging the gap between proof-of-principle optics and robust, practical bioimaging.
+
+
+
+The primary limitation of WFS systems is the rapid spatial variation of aberrations within a volumetric sample.
+Because scattering occurs throughout the 3D tissue volume, a single planar SLM can correct only a very limited local FOV. Prior WFS and adaptive optics (AO) demonstrations often considered simplified cases where the aberration source lies far from the target  \cite{YeminyKatz2021,Stern:19,Daniel:19,Metzler23NeuWS}. In conventional AO, for example, corrections compensate aberrations from imperfect optics or refractive-index mismatches that arise before the tissue \cite{Booth2014,Ji2017review,HampsonBooth21review}.
+Likewise, in vision science, AO effectively images the retina by correcting corneal aberrations, which are physically separated from the retina. 
+Such far-field conditions allow one correction to cover a much larger FOV. In most biomedical settings, however, the fluorescent target is embedded inside the scattering volume itself, and in this regime the correctable FOV of a single modulation is severely limited, typically extending only a few microns
+\cite{SeeThroughSubmission}.
+
+This severely limited correctable FOV of planar WFS has become a major roadblock to its widespread biomedical deployment. Despite recent efforts to rapidly estimate  modulations \cite{Dror22,monin2025rapidwavefrontshapingusing}, imaging any practical tissue volume still requires scanning and recomputing the modulation hundreds of times, making the process prohibitively slow. {\em The goal of this research is to develop a 3D wavefront shaping system capable of correcting aberrations across a wide 3D volume.} We plan to achieve this through the two steps outlined below.
+
+\input{fig_odt_res}
+
+\boldstart{Thrust 1: 3D aberration model.} We will leverage advanced diffraction tomography (DT) algorithms, previously developed by PI Waller's laboratory \cite{Kim2013,Horstmeyer:16,Chowdhury:17,Chowdhury:19,Chen:20,Zhou:20,ChoiLyers2023,liu2022recoverycontinuous3drefractive,Xue:22,he2024fluorescencediffractiontomographyusing,Kamilov:15,Sun:18}, to recover a 3D refractive index (RI) model for every point within the tissue volume. These algorithms operate by illuminating the tissue from multiple angles with coherent laser light and measuring the resulting scattered wavefront. By inverting this diffraction process across multiple projections, we computationally reconstruct the volumetric RI map that best explains the measured fields. Prior volumetric reconstructions from our group are illustrated in \figref{fig:odtres}.
+The RI map obtained via diffraction tomography describes only the coherent light–scattering properties of the sample; it does not directly reveal the incoherent fluorescent structures. Thus, a key subsequent step is to use the recovered 3D refractive structure to compute a dedicated aberration correction modulation for light scattering from each point in the volume. Applying these corrections via an SLM enables aberration-corrected fluorescent imaging.
+
+While some recent research has attempted to infer tissue aberration from the back-scattered fraction of external laser illumination \cite{haim2023imageguidedcomputationalholographicwavefront,Balondrade_2024,ChoiLyers2023,baek2025three,zhang2024deepimaginginsidescattering,Najar2024,Yoon2020}, these methods predominantly target thick objects where only front-side access is feasible. Consequently, they are limited to reflection-mode measurements, often combined with OCT for depth gating. However, the resulting back-scattered signal is inherently weak, rendering the reconstruction problem ill-posed and highly sensitive to noise. In contrast, this research targets small subjects  that afford multi-sided access. Utilizing {\em a transmission-mode} geometry makes the reconstruction problem well-posed, as the majority of incident light is transmitted, providing a significantly stronger signal. Moreover, the multi-angle transmission configuration offers more complete sampling of the 3D spatial frequency spectrum of the refractive volume, leading to a more stable and accurate inversion.
+
+To further extend the penetration depth of our system, we plan to exploit illumination at longer, Near-Infrared (NIR) wavelengths. This choice is motivated by the well-documented phenomenon that tissue scattering is significantly reduced as the illumination wavelength increases \cite{Cheong90,tuchin2007tissue,CAVE_0282,Jacques2013,Sandell2011,BASHKATOV2011,TDurduran_2002}. The reduced scattering simplifies the DT inversion at the longer wavelength, suffering from significantly fewer local minima. By first measuring the tissue scattering using NIR illumination, we can solve the DT problem to obtain a stable, low-resolution reconstruction of the tissue volume. This long-wavelength reconstruction will be used in two ways. First, we  develop a  computational method to convert  low-resolution NIR reconstruction into the required aberration correction modulations for common short, visible-wavelength fluorescent markers. Second, to enhance the final volumetric fidelity, we will use this low-resolution reconstruction as a powerful initialization prior for a subsequent, high-resolution optimization using the desired short-wavelength data. This multi-wavelength strategy avoids local minima and stabilizes the reconstruction of the short-wavelength volume.
+
+
+
+
+\boldstart{Thrust 2: Physical multi-conjugate correction.}
+Given a reconstructed 3D aberration model (Thrust 1), a 2D SLM would still require a distinct correction for every target point within the volume. This intrinsic limitation necessitates a slow, serial point-scanning imaging process. The root cause of this inefficiency is that the aberration experienced by light emerging from a target point depends on the accumulated phase distortion along its specific path through the 3D tissue. Because the optical path to the SLM is unique for every emission point, a single planar SLM can only display the correct compensating phase for one target point at a time.
+Our goal is to transcend this limitation by engineering a physical device that effectively applies the required 3D phase conjugation. Ideally, {\em this system would allow light emerging from all volume points to be corrected simultaneously using a stationary modulation pattern}. To address this, we propose the implementation of a multi-conjugate correction system. This approach utilizes multiple planar SLMs, each optically conjugated to a distinct depth plane within the aberrating volume. {\em Each SLM corrects the aberrations originating near its conjugated plane, and their combined effect approximates the full volumetric aberration of the tissue.} This allows us to apply a constant pattern across the SLMs and achieve wide-field, non-local physical aberration correction.
+
+Conventional multi-conjugate  architectures
+are cumbersome, challenging to align, and historically limited to two planes \cite{Thaung:09,Laslandes:17,Furieri23,Wang:18}. Conversely,
+our prior research \cite{levin2024TM} demonstrates that correcting a wide FOV requires a significantly greater number of correction planes.
+To overcome the complexity of multi-SLM systems, we propose a novel, compact optical architecture that leverages a single SLM with a lens and reflection mirror. This arrangement reuses the single SLM for sequential, effective corrections at multiple depth planes. The result is an effective volumetric correction device that utilizes a single physical SLM to correct volumetric aberrations over a wide FOV, enabling fast, non-scanning fluorescent imaging.
+
+
+
+\boldstart{Biological motivation and applications.}
+A wide range of living systems— embryos, developing organoids, engineered tissues, and small regenerative model organisms—undergo  spatial coordinated changes that are essential for understanding how biological form and function emerge. 
+Fluorescent labeling is essential to visualize these changes and track cell types and pathways.
+Fluorescence microscopy has fueled major advances in developmental and stem-cell biology, but its effectiveness depends critically on delivering and collecting light deep inside intact specimens—an ability that degrades rapidly with scattering \cite{power2017invivo, richardson2015clarifying}.
+
+Many biologically important systems fall within a compact $100–300 \mu m$ size range, where scattering increases steeply as cells differentiate, and matrices accumulate. This has been documented across embryos (e.g., mouse development transitions from transparent to highly scattering within days \cite{mcdole2018intoto}), organoids, and regenerating tissues. Organoids—3D miniaturized, self-organizing tissues grown from stem cells—are widely used to model human organ development and disease in vitro \cite{lancaster2014organoids}. Although they are often only a few hundred microns across, their dense cellular architecture and heterogeneous compositions generate strong optical scattering that limits deep access to fluorescent signals.
+These scattering constraints carry major scientific consequences. In embryos and organoids, they obstruct direct observation of how tissues pattern, how morphogenetic flows shape organs, and how early cell-fate decisions propagate across 3D structures—processes whose failure underlies many congenital disorders and embryonic developmental defects. In regenerative organisms such as planarians or zebrafish larvae, scattering prevents long-term tracking of stem-cell dynamics and tissue remodeling during regeneration, despite the fact that these organisms are prime models for studying how multicellular systems rebuild themselves \cite{auletta2021planarian}.
+Overcoming scattering limits in fluorescence microscopy would therefore provide access to biological events that are currently invisible in intact living specimens—unlocking new opportunities for studying early human development, improving organoid models of disease, and understanding the physical principles of tissue regeneration across diverse species.
+
+
+To maintain a manageable scope, this project will focus on   feasibility demonstration of this 3D correction pipeline on fixed biological samples. This capability is, in itself, transformative. It unlocks the path to high-throughput, high-resolution 3D imaging of complex specimens, enabling statistically powerful studies of cellular architecture and tissue patterning. This work will establish the foundation for a direct follow-up: applying this system to live imaging. We believe this is a feasible next step, as our target applications (early-stage embryos and organoids) are dominated by biological processes on the minute-timescale, not the millisecond-scale decorrelation found in vascularized tissue.
+
+%
+%Of particular relevance for this system are mouse embryos during early post-implantation stages. 
+%Early mammalian embryogenesis represents one of the most fundamental yet least accessible phases of development: the transformation from a simple cluster of cells into a structured, lineage-segregated embryo. In the mouse, the blastocyst and pre-implantation stages (embryonic day E3.5–E5.5) are of particular interest because they capture the first symmetry-breaking events, lineage specification (epiblast, primitive endoderm, trophectoderm), and the onset of epithelial organization and lumenogenesis~\cite{RossantTam2013,ChazaudYamanaka2016,RossantTam2009}. These embryos are $\sim100–200\mu m$ in size—small enough to fit within a single high-NA field of view—and exhibit significant light scattering due to their multicellular, lipid-rich structure. Fluorescent imaging of fixed embryos, labeling nuclei (H2B-GFP), membranes (E-cadherin, ZO-1), or lineage markers (OCT4, GATA6, SOX17) is routinely used to reconstruct 3D architecture, but image quality rapidly degrades with depth due to aberrations and multiple scattering. A diffraction-tomography-based wavefront-shaping system would enable true volumetric correction throughout the embryo, revealing subcellular morphology and spatial relationships currently lost beneath the scattering limit. This capability would immediately enhance our ability to quantify cell geometry, polarization, and lineage segregation in fixed specimens—critical for benchmarking in vitro embryo-like models and informing improvements in human IVF and developmental biology~\cite{Saiz2020,CrossSpecies2023}.
+%
+%
+%In the next stage, the same methodology can be extended to live, ex-vivo mouse embryos cultured under physiologic conditions. At these pre-implantation and early post-implantation stages, there is no blood flow or heartbeat, and cellular motions occur on minute-to-hour timescales, leading to slow speckle decorrelation and thus ideal conditions for real-time wavefront-shaping correction. Live fluorescence reporters such as H2B-GFP, membrane-mCherry, or transcriptional reporters for Sox2 or Brachyury will allow tracking of nuclear divisions, cavity formation, and symmetry-breaking events~\cite{RossantTam2013,Saiz2020}. These dynamic processes evolve slowly enough for diffraction-tomography measurements to remain valid for tens of seconds, yet are biologically rich and presently inaccessible beyond the superficial cell layers. By providing optical access deep into intact, developing embryos, this approach will open a new window on mammalian morphogenesis and offer a powerful platform for testing embryo viability and developmental dynamics—knowledge directly relevant to improving human assisted-reproduction technologies~\cite{CrossSpecies2023}.
+%
+%
+%Beyond the mouse embryo, the same optical framework is directly applicable to other compact, scattering biological systems such as human blastoid or gastruloid models, early zebrafish embryos, or stem-cell–derived organoids of comparable size ($100–300 \mu m$), where fluorescence is available and tissue dynamics remain sufficiently slow for volumetric wavefront correction.
+
+
+
+%The research plan combines the expertise of both PIs. 
+%PI Waller is an expert in diffraction tomography, providing reconstruction of internal tissue structure. 
+%PI Levin's lab has recently presented the first realization of a non-invasive wavefront-shaping system that can image real neurons very deep inside scattering brain, using simple single-photon fluorescent feedback. 
+%%To allow such algorithms to image large 3D volumes we must combine them with a 3D model of the tissue and to this end we plan to make usage of diffraction tomography reconstruction algorithms, an expertise developed by PI Waller's group.
+
+

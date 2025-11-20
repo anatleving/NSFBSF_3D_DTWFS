@@ -1,0 +1,177 @@
+\vspace{-0.1cm}\section{Trust 2: Physical multi-conjugate correction}\vspace{-0.1cm}
+\input{fig_multiconj_setup}
+While Thrust 1 provides a 3D aberration model, a single 2D SLM requires a {\em different} phase mask for every point in the volume.
+ To image the full 3D volume, we would be forced to perform a serial, point-by-point confocal scan, placing a new pattern on the SLM for every single spot.
+While conventional confocal microscopy utilizes fast galvo mirrors, an aberration-correction scan is severely limited by the SLM refresh rate. The fastest available SLMs (from manufacturers such as Texas Instruments or Meadowlark Optics) operate at rates of only 1.4 KHz. This is orders of magnitude slower than galvo mirror speeds, creating a critical bottleneck on volumetric acquisition. For example, scanning a
+$100\times 100 \times 100 \mu m $ volume at a $1\mu m$ pitch would require approximately 10 minutes, which is too slow for high-throughput applications.
+
+Our goal in Thrust 2 is to construct a {\em physical correction system that can correct light emerging from a large tissue area with a single, fixed modulation pattern.}
+To achieve this we are interested in multi-conjugate correction systems  \cite{Thaung:09,Wu:15,Laslandes:17,Furieri23,Wang:18}, which can effectively realize the multi-slice model in hardware. The multi-conjugate optics utilizes a set of planar SLMs, each placed such that it is optically conjugated to a distinct depth plane inside the aberrating volume, as illustrated in \figref{fig:setup_multiconj}(a). Each SLM is tasked with correcting the aberrations localized near its respective conjugated plane in the tissue. The combination of these SLMs thus creates a physical structure that inverts the volumetric aberration of the tissue.
+
+Once this multi-conjugate device is implemented, imaging can be carried out in three  modes: First, full-field imaging: Illuminating the entire sample simultaneously and correcting only the emission light as it passes through the multi-conjugate optics. While this mode provides no depth sectioning, it is highly effective for imaging sparsely labeled samples where out-of-focus components contribute minimally to the background. 
+Second, we can use a fast confocal scanning: Both the excitation and emission beams are passed through the multi-conjugate optics to ensure optimal 3D correction. The SLM modulation can now remain fixed, and the volumetric scanning can be accomplished by tilting a galvo mirror at its inherently much faster rate. Finally,  as a path for future work, the multi-conjugate correction can be integrated  with a light-sheet microscopy platform, allowing independent  correction of both the illumination sheet and the imaging arm for superior sectioning and speed. 
+
+
+
+
+
+\subsection{Analyzing Design Principles} 
+Below, we discuss  two key aspects influencing the performance of a multi-conjugate correction design: the order of the correction layers and the number of correction layers.
+
+\boldstart{Number of correction layers.}   Previous efforts to construct multi-conjugate adaptive optics systems \cite{Thaung:09,Laslandes:17,Furieri23,Wang:18} were primarily developed for correcting low-order optical aberrations (like those from imperfect optics) rather than the highly complex, distributed scattering of 3D biological tissue. To our best knowledge, such systems have been implemented with no more than two SLM layers, a limitation imposed by the significant complexity of combining and aligning multiple discrete SLMs.
+
+Before proceeding with our design, it is critical to determine the number of SLM layers required for effective deep-tissue correction. Our recent research \cite{levin2024TM} rigorously addressed this question through a combination of analytical theory, laboratory measurements, and numerical simulations. The principal finding of this analysis is that a large number of effective correction planes is crucial for increasing the quality of the correction and the correctable Field-of-View (FOV), with the number of planes being significantly more important than the lateral resolution of each individual correction layer.
+Our findings  provide a direct link between the number of correction planes and the correctable FOV. While the exact FOV varies with tissue type, we anticipate the following performance gains: a single correction plane is limited to a very small FOV of approximately $5\mu m$; 3 correction planes are expected to increase the correctable FOV to about $20-30\mu m$; and 6  correction planes are required to reach a  FOV of $50-60\mu m$.
+
+
+
+%
+%
+% While some optimistic thinking would say the number of correction planes should be proportional to the optical depth of the material (so for weakly scattering samples a small number of correction planes will due), our analysis suggests that the number of planes scales with the physical thickness of the tissue, and the spacing between correction planes should be proportional to the depth of field of the microscope. 
+% %However, the effective depth of field of the correction may be rougher than the actual depth of field of the 
+% To correct a very wide field of view the spacing between planes should thus just a few microns, suggesting that to correct a $200\um m$ thick tissue we may need a crazy number of $100$ correction layers. However, if the field of view we aim to correct is smaller
+% the effective depth of field  
+% requirements can be relaxed. 
+% 
+% 
+% 
+%  the effective ``depth of field'' required by the system can be relaxed  and the number of correction planes can be reduced. The theory helps us to directly link between the number of correction planes and the field of view that we can correct simultaneously. 
+%  
+   
+  
+ 
+%  This analysis suggest that the spacing between adjacent planes should be proportional to the depth of field. For a standard $\NA=0.5$ objective the depth of field is about $20\mu m$, suggesting that to correct a $200\mu m$ thick tissue we need an impractical number of as many as $100$ correction planes. This number holds even for optically thin samples.   The large number of planes, however, is derived assuming that the lateral extent of the tissue is unbounded. If one is only interested in correcting a limited field of view, effectively the depth of field characteristics of the analysis reduces, and correcting a limited field of view can be done with a  smaller number of planes. The correctable field of view increases fast with the number of planes.
+% While the exact field of view vary between different types of tissue we anticipate that with  a single correction plane we can image a very small field of view of maybe $5\um m$, with 3 correction planes we expect to be able to correct image larger FOVs of about $20-30\mu m$. 
+
+
+\boldstart{Ordering correction layers:}
+\figref{fig:setup_multiconj} illustrates two possible multi-conjugate arrangements. For schematic clarity, the illustration visualizes transmissive rather than reflective SLMs. For analysis, we mark three representative depth planes in the tissue: $p_1,p_2,p_3$. 
+The SLMs are placed at their corresponding conjugate planes in the optical path, so they appear as different defocus planes. We refer to the two designs as the order-preserving correction (\figref{fig:setup_multiconj}(a)) and the order-reverting correction (\figref{fig:setup_multiconj}(b)). In the order-preserving setup, the correction for plane $p_1$ is applied first, followed by $p_2$, and then $p_3$. In the order-reverting setup, the light is first corrected for $p_3$ and then passes through a relay to meet the correction for $p_2$.
+
+The order-preserving setup is  simpler to construct, as it avoids the need for intermediate relay optics. However,  adaptive optics literature \cite{1998aoat.bookH} states that a multi-conjugate system must be built such that the order of the SLM planes is reverted relative to the order of the matching aberration planes inside the tissue. %This necessity is critical to correctly conjugate the phase across the 3D volume.
+
+
+To understand this necessity, let $\TM_{\text{tissue}}$ be the transmission matrix describing the light propagation in the scattering tissue. Our objective is for the correction optics to implement the  inverse transformation, $\TM_{\text{tissue}}^{-1}$. Assuming the tissue propagation is  expressed by the multi-slice model, $\TM_{\text{tissue}}$ is given by \equref{eq:multi-layer-transmission-matrix}.% with layers $\AbrVect_1(x,y),\ldots, \AbrVect_M(x,y)$.
+The matrix $\TM_{\text{tissue}}$ can be analytically inverted by inverting each component operator and {\em reversing their order}. Inverting the aberration matrix $\DiagM(\AbrVect_{m})$ is equivalent to a modulation $\CorVect_m(x,y)=\AbrVect_m(x,y)^{-1}$. Inverting the forward propagation operator $\OpPr_{\eps}$ is equivalent to backward propagation $\OpPr_{-\eps}$. Thus, the inverse matrix is: \BE \TM_{\text{tissue}}^{-1}=\OpPr_{-\eps}\DiagM(\CorVect_1) \ldots \OpPr_{-\eps} \DiagM(\CorVect_{M}) \OpPr_{O}^{-1}. \EE Importantly, matrix multiplication is not commutative, meaning the correction must be applied in the reverse order of the aberration accumulation. This exact transformation is physically implemented by the order-reverting setup of \figref{fig:setup_multiconj}(b).
+
+In contrast, if we select the order-preserving setup of \figref{fig:setup_multiconj}(a), there is no direct choice of correction patterns $\CorVect_m$ that can implement $\TM_{\text{tissue}}^{-1}$. We would be forced to resort to an optimization problem seeking modulation layers that best approximate $\TM_{\text{tissue}}^{-1}$. However, given that our multi-conjugate system is constrained by only $N^2\cdot M$ degrees of freedom, we cannot realize an arbitrary transmission matrix with $N^2$ rows and $N^2$ columns, leading to inevitable correction errors.
+
+
+
+%In the same way we assume that the multi-conjugate correction optics includes $M$ aberration masks $\CorVect_1,\ldots,\CorVect_M$.  The transformation realized by the order preserving  design  of \figref{} is equivalent to a transformation of the form
+%\BE
+%\TM_{\text{optics-order-preserve}}=\OpPr_\eps\DiagM(\CorVect_M) \ldots \OpPr_\eps \DiagM(\CorVect_{1}) \OpPr_\eps,
+%\EE
+%where the $M$ correction are applied in ascending order.
+%The order reverting setup is equivalent for a transformation of the form
+%\BE
+%\TM_{\text{optics-order-revert}}=\OpPr_{-\eps}\DiagM(\CorVect_1) \ldots \OpPr_{-\eps} \DiagM(\CorVect_{M}) \OpPr_{-\eps},
+%\EE
+%The two impotent distinction are that the light first meets the correction of plane $2$ and only then the correction of plane $1$, and second that the propagation is in the negative direction $-\eps$ rather than $\eps$. This is because the setup of \figref{} is designed such that the light emerging from plane $p_2$ is relayed, but meets the 2nd SLM at plane $p_1$, placed a bit {\em before} another image of $p_2$ is formed. 
+%Clearly with the order reverting setup there is a simple choice for the correction layers, we simply select $\CorVect_m(x,y)=\AbrVect_m(x,y)^{-1}$. Since backward propagation $\OpPr_{-\eps}$ is inverting forward propagation $\OpPr_{\eps}$ we get that concatenating (multiplying) the two transformations $\TM_{\text{optics-order-revert}}\cdot \TM_{\text{tissue}}$ leads the identity transformation as desired.
+%
+%In contrast, if we choose the order preserving setup, there is no immediate choice of correction patterns $\CorVect_m$ that would allow the matrix $\TM_{\text{optics-order-preserve}}$ to implement the inverse of $\TM_{\text{tissue}}$. Clearly we can try to solve an optimization problem seeking layers $\CorVect_1,\ldots \CorVect_M$ such that $\TM_{\text{optics-order-preserve}}$ best approximate $\TM_{\text{tissue}}^{-1}$. However, as $\TM_{\text{optics-order-preserve}}$ has only $N^2\cdot M$ degrees of freedom it cannot realize any arbitrary transmission matrix with $N^2$ rows and $N^2$ columns. 
+
+
+To experimentally validate the requirement for the order-reverting architecture, we utilized a transmission matrix  previously captured in our lab \cite{levin2024TM} by measuring the scattering of a dense set of coherent illumination waves through a layer of  tissue. Since this matrix encodes propagation through a real medium, we do not have direct knowledge of the ground-truth aberrations $\AbrVect_1,\ldots \AbrVect_M$. We performed an optimization to fit this measured data using two different multi-slice models: the order-preserving model and the order-reverting model. In both cases, gradient descent was used to seek the SLM correction layers $\CorVect_1,\ldots \CorVect_M$ that best approximated the measured transmission matrix.
+
+\figref{fig:setup_multiconj}(c) plots the $\ell_2$-norm error between the fitted model's transmission matrix and the measured transmission matrix, as a function of the number of correction layers $M$. The order-reverting arrangement achieved a significantly lower error and a better approximation of the measured tissue data. This crucial result confirms that the transmission matrix of the tissue is not an arbitrary matrix of $N^2\times N^2$ independent random values. Instead, the entries are strongly correlated by the underlying physical process of light propagation. When the fitted correction model respects the same physical, non-commutative process, it can accurately explain the data. Conversely, when the fitted model violates this physical constraint, a good solution cannot be found, leading to a much larger approximation error. %This provides strong experimental evidence that the complexity of the order-reverting optical system is necessary for high-fidelity 3D aberration correction.
+
+
+
+\subsection{Approaches for Multi-Conjugate Correction}
+
+Based on the preceding analysis, we plan to pursue two  approaches for constructing a multi-conjugate correction system. These orthogonal approaches will help mitigate the project's risk by ensuring a viable path to volumetric correction.
+
+\subsubsection{Thrust 2.1: Order-Reverting Correction with Multiple SLMs}
+
+Our first approach is to construct an order-reverting multi-conjugate correction  using three sequential SLMs  (\figref{fig:setup_multiconj}(b)). This system will be adapted from a previous cascaded holographic display built in our laboratory \cite{Monin2022Cascade}, which already exploits three sequential SLMs separated by three sequential relay systems.
+
+While this approach is relatively low-risk given our existing hardware, it is limited by the physical complexity and bulk of using multiple discrete SLMs. With 3 SLM layers it will only allow us to correct a limited FOV and will require tiling—sequentially modifying the SLM modulation and capturing different sub-areas—to image a wide target. Critically, the FOV correctable with a three-layer multi-conjugate optics is significantly wider than that of a single-layer correction, making the volumetric acquisition much faster than the point-by-point scanning described in Thrust 1.
+
+\subsubsection{Thrust 2.2: Reusing a Single SLM for Multiple Corrections}
+
+\boldstart{Multi-Plane Light Conversion (MPLC) without order reversion.}
+Implementing and aligning complex setups with multiple SLMs  is a significant challenge. A common simplification technique is Multi-Plane Light Conversion (MPLC) \cite{Kupianskyi23MPLC,rocha2025selfconfiguringhighspeedmultiplanelight,Kupianskyi:24,Mididoddi2025Threading,Lib_2025,Lib2024ResourceEfficient,Labroille2014,Fontaine2019,Butaite2022,MartinezBecerril2024,Ran2024,Lin2018,Zhou2021,Yu2025}, which utilizes a single SLM and a planar mirror to reflect light multiple times, effectively creating several virtual modulation planes. However, as no relay is used, existing MPLC systems naturally implement an order-preserving modulation, not the order-reverting modulation required for tissue aberration correction. 
+
+MPLC have been used to implement a wide range of optical conversion, e.g. inverting the perturbation of a multi-mode fiber. 
+However, 
+%MPLC systems are typically designed to realize a desired transformation between a small set  of $J$ input and output modes, $\bou^{in}_j \rightarrow \bou^{out}_j$, where the transformation $\TM_{\text{MPLC}}$ implements $\bou^{out}_j=\TM_{\text{MPLC}}\bou^{in}_j$. 
+the majority of existing realizations convert a relatively small numbers of only a few dozen wavefront modes. This is several orders of magnitude lower than the requirement for deep-tissue microscopy: correcting a modest FOV of $50\mu m\times 50\mu m$ necessitates the conversion of approximately $10^4$ modes. To handle such a large number of modes, the optical transformation must inherently respect the physical process by which the aberration was created, which requires the order-reverting design.
+
+%Therefore, the main innovation in this thrust is the design and implementation of a novel, compact, single-SLM system capable of performing order-reverting MPLC to achieve a wide FOV correction. This approach provides the high number of effective correction layers needed  without the  complexity of a multi-SLM system.
+
+
+
+\input{fig_rMPLC}
+\boldstart{Compact realization of a relayed multi-plance conversion:}
+The central  challenge of this research is to construct a multi-conjugate correction system that provides the necessary large number of effective correction planes within a compact, single-component architecture. Our previous research \cite{levin2024TM} established that while many correction planes are required, the lateral spatial frequency content of each plane's modulation is significantly lower than the number of pixels of a modern SLM. This suggests that, theoretically, multiple correction screens can be spatially multiplexed onto a single SLM.
+
+To translate this concept into a physical optical system, we take inspiration from MPLC designs. The innovation is to reuse the same SLM to implement multiple correction steps, with the light path passing through a relay system between reflections to achieve the necessary order-reverting modulation. We name this  configuration the relayed-MPLC  system.
+
+A schematic of our relayed-MPLC design is illustrated in \figref{fig:setup_rMPLC}(a) . Light emerging from the sample passes through the objective and a tube lens. At the tube lens's focal plane, the wavefront encounters a $45^o$ tilted mirror, which directs it into the relayed-MPLC unit. After multiple reflections within this unit, the light exits via a second tilted mirror, which directs it onto the camera sensor.
+
+The core relayed-MPLC unit consists of an SLM, a lens, and a  mirror surface positioned at the lens's focal plane. The lens and mirror configuration effectively realize a reflective $4f$ relay system: light reflecting from a point on the SLM is refracted by the lens, reflected by the mirror, and refracts back through the lens. Eventually, the light is focused back onto the SLM plane, where a new layer of modulation can be applied. 
+
+The optics are precisely designed to achieve two critical goals. The first one is lateral separation: Successive bounces intersect the SLM plane at different physical areas (tiles), allowing distinct aberration modulations to be applied using different pixels on the same SLM. The second goal is axial separation: The different bounces correspond to different levels of defocus in the optical path. For instance, the intersection of the first bounce is wide, while successive bounces systematically shrink in size. These distinct defocus intersections correspond to the images of different depth planes within the tissue, thus enabling the correction of multiple depth slices. We explain how these two requirements are achieved below.   
+
+
+
+
+%The design of the relayed-MPLC unit includes two key ideas. First, the axial distance between the SLM plane and the lens is set to be $f-\zeta$ where $f$ is the lens focal plane, and $\zeta$ is a small shift. This shift allows us to control the axial separation between the different correction planes. Second, by tilting the mirror surface behind the lens we can control the number of reflection iteration the light passes before exiting the relayed-MPLC unit, and the exact position of these reflection events on the SLM. For improved flexibility we use two different tilts on the left and right side of the mirror surface. Due to space restrictions we do not include here a detailed description of these principles. 
+
+
+%The design of the relayed-MPLC unit includes two key ideas we explain below. First, the axial distance between the SLM plane and the lens is set to be $f-\slmsft$ where $f$ is the lens focal plane, and $\slmsft$ is a small shift. This shift allows us to control the axial separation between the different correction planes. Second, by tilting the mirror surface behind the lens we can control the number of reflection iteration the light passes before exiting the relayed-MPLC unit, and the exact position of these reflection events on the SLM.
+
+
+\boldstart{Controling axial seperation:} A simple property of $4f$ systems derived from paraxial ray optics states than in an ideal $4f$ relay, rays emerging from an object point located at an axial distance $f+\pointsft$ before the system converge into an image point at distance $f-\pointsft$ behind it.
+\figref{fig:setup_rMPLC}(c) illustrates this principle within our reflective 4f system. If we initially assume the SLM is placed exactly at the front focal length $f$ of the lens, with the mirror at the back focal length $f$, and we place a point light source (which is the convergence point of light emerging from a single tissue point after the tube lens) at distance $\pointsft$ from the SLM, the following occurs: Light travels distance $\pointsft$ to the SLM plane, reflects, and is directed toward the lens. Effectively, the point source is located at a distance $f+\pointsft$ from the lens. Consequently, the rays return and converge at a distance $f-\pointsft$ after the lens, which means the convergence point is exactly the starting point.
+
+In \figref{fig:setup_rMPLC}(d), we deliberately introduce a small axial shift by moving the SLM closer to the lens, such that its distance is now $f-\slmsft$. If we trace rays emerging from a point source at distance $\pointsft$ from the SLM, the distance traveled from the point source to the lens is now only $f+\pointsft-\slmsft$. The rays return and converge at a distance $f-\pointsft+\slmsft$ after the lens. Crucially, this implies that the distance between the convergence point and the SLM plane is now shortened from $\pointsft$ to $\pointsft-2\slmsft$.
+This new convergence point becomes the starting point for the next bounce, illustrated in \figref{fig:setup_rMPLC}(e). On the subsequent bounce, the rays will converge at a distance $\pointsft-4\slmsft$ from the SLM plane, and so on.
+The result is that as light reflects multiple times inside the $4f$ relay, each successive interaction with the SLM plane appears to be conjugated to a different depth slice of the tissue, enabling the correction of multiple planes. The uniform axial separation between these effective correction planes is directly governed by the SLM axial shift $\slmsft$. This technique allows a single physical SLM to perform the essential axial sampling required for volumetric 3D aberration correction.
+
+
+\boldstart{Controling lateral seperation.}
+A second key component in the design of our relayed-MPLC unit is ensuring that, while the light interacts with the same SLM plane multiple times, each reflection event interacts with different SLM pixels, so we can display a distinct modulation pattern, $\CorVect_m$.
+
+To shift the point of intersection on the SLM plane, we must introduce a tilt to the rays in the Fourier plane, which means tilting the mirror positioned behind the lens. However, a single, global tilt is insufficient because the light path through the reflective $4f$ relay system also reflects the lateral coordinates around the optical axis.
+%To see this consider a ray emerging from a point $x_o$ on the SLM plane, assuming the SLM is placed exactly at the focal plane of the lens (an exact $4f$ system). If the mirror is orthogonal to the optical axis, a ray emerging from $x_o$ is mapped after the relay to the symmetric point $-x_o$. If we tilt the mirror by an angle $\alpha$, the intersection point is shifted to $-x_o+t_\alpha$ with $t_\alpha=f\alpha$. However, the ray then reflects again through the optics.  With the tilted mirror, the point returns to $(x_o-t_\alpha)+t_\alpha=x_o$. That is, regardless of the selected global tilt angle, after two bounces through the system, a ray would return precisely to its starting point. This is undesired, as we need multiple bounces to meet different SLM pixels.
+
+ 
+
+ To overcome this,  we tilt the first fan of rays emerging from the SLM such that it spans a range of angles $[0,\Theta]$. 
+ This ensures that at the Fourier plane, the light only intersects with the right side of the mirror. This fan of rays returns to the SLM plane and reflects, resulting in a ray fan spanning the symmetric range $[-\Theta,0]$. On its second interaction with the Fourier mirror, it therefore only interacts with the left side. Generalizing this principle, all odd interactions pass through the right side of the mirror, and all even bounces pass through the left side.
+ This allows us to apply a different tilt on each side of the Fourier mirror, ensuring that the even and odd intersections with the SLM plane are shifted in different directions. In practice, we design our system such that the effective shift for even-numbered bounces is $t_{\text{even}}=-\Delta$, and for odd-numbered bounces is $t_{\text{odd}}=\Delta$. If the first fan of rays starts from a point $x_o=-2\Delta$, a sequence of reflections through the relayed-MPLC would look like:\BEA
+ &-2\Delta \rightarrow(reflect, t_{\text{even}}=-\Delta ) \rightarrow \Delta \rightarrow(reflect, t_{\text{odd}}=-\Delta ) \rightarrow 0 \\&\rightarrow(reflect, t_{\text{even}}=-\Delta ) \rightarrow, -\Delta\nonumber  \rightarrow(reflect, t_{\text{odd}}=-\Delta ) \rightarrow 2\Delta,
+ \EEA This sequence involves five bounces through the relayed-MPLC, sweeping across equally spaced lateral points between $-2\Delta$ and $2\Delta$. The sequence starts at one side of the plane (at  $-2\Delta$) and ends at the other side (at $2\Delta$). When combined with the entrance and exit mirrors of the relayed-MPLC (positioned in \figref{fig:setup_rMPLC}(a) at angles $45^o,-45^o$), this sequence forms the complete trip of the light through the system. By adjusting the tilt angle, we can precisely pack a different number of bounces into the system.
+ 
+ In \figref{fig:setup_rMPLC}(a), we visualize a side view of a sequence with five bounces, and in \figref{fig:setup_rMPLC}(b), a top view illustrates a similar sequence with seven bounces. Here, reflections along both $x$ and $y$ axes are utilized to spatially pack more bounces onto the SLM area, though the sequential lateral shift is implemented only along the horizontal axis.
+ 
+
+\boldstart{Preliminery design:} 
+We have  designed a first prototype for our relayed-MPLC  unit using careful ray tracing simulations of all optical paths. The lateral intersection of the multiple ray bounces with the SLM plane is visualized in \figref{fig:setup_rMPLC}(b).
+ The design aims to correct all wavefronts emerging from fluorescent sources spread inside a FOV of $50\mu m \times 50\mu m$ in the tissue. We assume the tissue thickness is $250\mu m$ and aim to create $5$ equally spaced correction planes in this range. We plan to use a $\NA=0.5$ objective, $10\times$ magnification between the sample and the SLM plane, followed by $2\times$ magnification between the SLM plane and the sensor. We plan to use a standard Holoeye SLM whose area is $15.42\times 9.66 mm$.
+ Within the SLM area, we pack 7  bounce events. The first and last bounces interact with the $45^o$ entrance and $-45^o$ exit mirrors, leaving 5  bounces intersecting the SLM surface. These 5 intersections allow us to apply five distinct modulation patterns, $\CorVect_m$, corresponding to the tissue structure at the five different depth slices.
+ \figref{fig:setup_rMPLC}(b) illustrates how these bounces are packed onto the SLM area. For each bounce, the solid line marks the intersection of the cone of rays emerging from a point at the FOV center, while four dashed lines represent the cones emerging from the corners of the  FOV. Consistent with the required order-reverting correction, the first bounce is the widest; it is designed to correct the aberration of plane $p_5$ (the plane farthest from the light source, thus having the widest cone of rays), and successive iterations correct progressively smaller cones.
+ 
+ This schematic illustrates one working scenario, but  the same relayed-MPLC hardware can be used to correct a different number of planes at a different axial spacing  by adjusting control parameters: translating the SLM by a few millimeters away from the lens focal plane, and/or tilting the mirrors behind the lens.
+ 
+ 
+ In this first design, the $10\times $ magnification between the tissue and the SLM means the SLM pixels of size $8\mu m$ effectively replicate tissue features of size $0.8\mu m$. While this is slightly larger than the diffraction limit, our prior observation \cite{levin2024TM} confirms that this resolution is sufficient for effective correction. The SLM modulation aims to replicate the RI of the tissue, and since the tissue structure is piecewise smooth, high spatial frequencies are not required. Furthermore, we have observed that smoothing the modulation  aids in regularization and improves the  wavefront shaping result. We believe the resolution of the correction can be reduced even further, which would allow  squeezing more correction layers onto the same SLM.
+
+
+
+
+%\boldstart{Multi-conjugate adaptive optics.} Prior multi-conjugate adaptive optics systems~\cite{Thaung:09,Wu:15,Laslandes:17,Furieri23} provide supportive evidence that  multiple SLMs can increase the field-of-view of the correction. However,  the corrected aberrations are usually low order ones and do not correct highly varying speckles as we aim to do. For these tasks, the SLM modulation patterns can be estimated in simpler ways~\cite{Kam2007,Simmonds_2013,Wu:15}. In some cases researchers just slice the 3D RI volume into planes~\cite{Kam2007}, others average the point-wise modulations~\cite{Wu:15}, or use  linearization of ray optics models~\cite{Furieri23}. In contrast, to account for highly varying speckles, in this research we aim to solve a non-linear optimization problem, modeling the full diffraction process.    
+%
+
+\boldstart{Content creation:} 
+Ideally, the phase patterns displayed on the SLM tiles should exactly match the  aberration layers  recovered by the diffraction tomography  (Thrust 1).
+However, realizing this requires a highly precise optical calibration to map the physical position of each SLM tile to its exact conjugated depth plane in the tissue volume, as well as accounting for any residual aberrations between the SLM layers themselves. We plan to adapt established MPLC alignment  procedures, such as those developed in recent work \cite{Lib_2025}. A potentially slower but more robust alternative, which may be used to bootstrap the system, is a self-configuring layer estimation technique \cite{rocha2025selfconfiguringhighspeedmultiplanelight}. This approach bypasses the need for explicit  calibration and directly adjust the SLM content to maximize a target metric, such as the  spot sharpness at desired points. This approach can be accelerated using optical gradient descent as in our recent work~\cite{monin2025rapidwavefrontshapingusing} and in \cite{Mididoddi2025Threading}.
+
+\boldstart{Summary of contributions:}
+Our goal in this part of the project is to build a correction system that {\em uses the same modulation to correct the light emerging from multiple points inside the tissue, spread over a wide field of view, by constructing an optical device that physically replicates the 3D structure of the tissue and simultaneously corrects the aberration at multiple depth planes}. To mitigate risk, we consider two  approaches: a low-risk approach involving 3 sequential, order-reverting SLM correction layers for a medium-size FOV, and a higher-gain, higher-risk approach using a novel relayed-MPLC  system, which employs a single SLM and single relay optics to  reuse the SLM for implementing multiple order-reverting modulation planes, thereby achieving a wide FOV correction in a compact device.
+
+ 
+

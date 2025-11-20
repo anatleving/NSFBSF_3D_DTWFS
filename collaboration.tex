@@ -1,0 +1,106 @@
+\section*{Collaboration Plan}
+The proposed work will be executed by a team spanning two universities: University of California Berkeley (Berkeley) in the United States, and the Technion - Israel Institute of Technology (Technion) in Israel. The team has diverse expertise in computer graphics, computer vision, machine learning, optimization, computational imaging and optics.  We have already been working together, as {\em PI Levin is currently spending a year long  sabbatical at Berkeley. }
+
+\subsection*{Project Management}
+Overall management of the project will reside with PI Waller, who  will coordinate research meetings and other outreach activities. We will meet weekly via videoconferencing to discuss research directions and advise joint students, as well as facilitate the transfer of data and planning of new experimental designs.
+
+The requested funds will support 2-3 graduate students, 1 at Berkeley and 1-2 at the Technion, a summer research month by  PI Weller, and part-time support for the lab manager in PI Levin's lab, who will guide the project. The research team will be expanded to include undergraduate researchers, either on a for-credit basis or through future NSF REU supplements as well as programs available within each of the two institutions. We describe  the roles of the PIs below. 
+We emphasize that, even though each project component will be lead by one of the PIs, both PIs will be involved in all aspects of the project. %We believe that both the hardware and algorithmic parts of the project are time consuming and can take 2-3 years to complete. However, we plan to parallelize the process, with one of the supported students focusing on hardware, one on software, and one on the integration of both. 
+
+
+\vspace{0.1cm}
+\boldstart{PI Waller} will lead the development of Trust 1: diffraction tomography, including reconstruction under NIR wavelengths. The Waller lab already have a setup for capturing diffraction tomography measurements with multiple illumination wavelengths. 
+They will also integrate an SLM into their diffraction tomography setup, and use it for aberration-corrected florescence imaging.
+The Waller lab has a lot of  prior experience in  diffraction tomography~\cite{Chowdhury:19,Chen:20,Xue:22} and more broadly on phase imaging~\cite{Tian2014,Tian:15,Yeh2015,Tian2015QuantPhaseCont}. We also have preliminary research on multi-slice reconstruction from fluorescent sources~\cite{Xue:22,Cai:23,he2024fluorescencediffractiontomographyusing}. 
+ 
+\vspace{0.1cm}\boldstart{PI Levin} will lead the development of Trust 2, multi-conjugate optics. 
+The Levin lab has a lot of prior experience with wavefront shaping \cite{monin2025rapidwavefrontshapingusing,DrorNatureComm24,Dror22}. They also have an existing holographic display composed of 3 relayed SLMs~\cite{Monin2022Cascade}, which will form the basis for the proposed multi-conjugate correction system. 
+
+
+ 
+%\vspace{0.1cm}
+%\boldstart{PI Waller} will lead the development of multi-wavelength experimental acquisition system (Aim 1), including the setup and calibration of a wavelength tunable laser, supported by a galvo system for angle tilt. The Waller lab has a lot of  prior experience in  diffraction tomography~\cite{Chowdhury:19,Chen:20,Xue:22} and more broadly on phase imaging~\cite{Tian2014,Tian:15,Yeh2015,Tian2015QuantPhaseCont} and much of the experimental setup already exists in the Waller Lab. \boldstart{PI Levin}
+%will focus on registration and optimization algorithms for Aim 1. This includes numerical inversion algorithms which support multi-slice propagation in different directions, tracking and registration,  as well as  neural fields.  
+
+%For the work of Aim 2, PI Levin will develop a rotating acquisition setup and geometric calibration method for addressing the missing cone problem. PI Levin's has a lot of experience building optical microscopy setups~\cite{Dror22,DrorNatureComm24,SeeThroughSubmission,Chen:22,gkioulekas2015transient,Kotal2020,Kotwal:2023:SWI}. In particular she has already built a rotating acquisition setup in~\cite{Gkioulekas2013:IVR} and she has recently also studied multi-slice models~\cite{levin2024TM}. Before moving into the optics field,  PI Levin has completed a Ph.D. in computer vision. She brings with her a rich algorithmic experience in numerical optimization, image processing, natural image priors and machine learning~\cite{LevinEtAl01,LevinWeiss04,Levin_Nadler_11,LevinDeconv09,LevinEtAl04,LevinEtAl03,LevinEtAl06,gkioulekas2016inverse,Bar:2019,Bar:2020}. She also worked on multiple view geometry which will be important for the geometric calibration of the rotating setup~\cite{DBLP:conf/iccv/ShashuaL01,shapetensors2001,Gkioulekas2013:IVR}.     
+
+%Also within Aim 2, as well as Aim 3, PI Waller will lead the development of implicit neural fields for both axial resolution improvement and space-time reconstruction. There is a lot of recent research in their lab on neural fields regularization for a verity of other reconstruction problems~\cite{Cao24spacetime,Chien24SpaceTime}. PI Levin's lab is also quite adept at building such neural network architectures and so will also play a crucial role in the implementation of these algorithms on experimentally-captured data. 
+
+
+\subsection*{Timeline and Milestones}
+The project will be executed over three years, with a clear progression from foundational subsystem development to a fully integrated, high-performance system.
+
+\begin{enumerate}
+	\item \textbf{Year 1:} \textbf{Foundation, Subsystem Validation, and First Correction} \\
+	The first year is focused on building and validating the foundational hardware and software for both project thrusts and achieving a key low-risk validation of the 3D modeling.
+	\begin{itemize}
+		\item {Milestone 1.1 (Thrust 1.1: 3D Modeling):} Develop and validate in simulation the diffraction tomography algorithms. Build the optical setup and demonstrate 3D refractive index reconstruction using short-wavelength light on known phantoms and simple fixed samples (e.g., C. elegans).
+		
+		\item {Milestone 1.2 (Thrust 1.1: First Aberration Correction Demonstration):} Use the 3D aberration model  (short-wavelength) to compute corrections for a single planar SLM in a standard point-scanning microscope, using a different 2D modulation for each target 3D point. Demonstrate successful aberration-corrected focusing deep inside fixed samples.
+		
+		\item {Milestone 1.3 (Thrust 2.1: Correction System):} Design, build, and align the low-risk 3-plane multi-conjugate correction system. Validate its performance by correcting pre-defined, known aberrations.
+		
+		
+	\end{itemize}
+	
+	\item \textbf{Year 2:} \textbf{Advanced Modeling, Multi-Conjugate Integration, and High-Risk Development} \\
+	The second year focuses on tackling advanced NIR modeling, integrating the multi-conjugate system, and beginning the high-gain relayed-MPLC system.
+	\begin{itemize}
+		\item {Milestone 2.1 (Thrusts 1.2):} Advance 3D modeling to use NIR wavelengths, enabling deeper penetration. Develop and validate the computational methods for converting 3D models acquired at NIR to the required aberration corrections for visible fluorescence wavelengths.  Before testing on real tissue, we will first demonstrate the two-wavelength (NIR + visible) reconstruction in simulation to confirm algorithmic convergence. We will  validate it on a well-characterized scattering phantoms.
+		
+		\item {Milestone 2.2 (Multi-Conjugate Correction Demonstration):} Integrate the 3D aberration model (from M1.1) with the low-risk 3-plane multi-conjugate correction system (from M1.3). Demonstrate medium field-of-view imaging, which will significantly reduce the required scanning range, on fixed biological samples.
+		
+		\item {Milestone 2.3 (Thrust 2.2):} Begin high-risk relayed-MPLC system. Finalize the design, fabricate components, and begin assembly of the high-risk, high-gain single-SLM {relayed-MPLC} system.
+		
+		\item {Milestone 2.4 (Dissemination):} Release the initial open-source software package for diffraction tomography and wavefront shaping corrections.
+	\end{itemize}
+	
+	\item \textbf{Year 3:} \textbf{Advanced System Integration and High-Throughput Demonstration} \\
+	The final year is dedicated to assembling the advanced system, accelerating  computation and hardware, and demonstrating the project's key goal of high-throughput imaging.
+	\begin{itemize}
+		\item {Milestone 3.1 (Thrust 2.2):} Complete and validate the high-risk, high-gain single-SLM {relayed-MPLC} system, demonstrating its superior correction and {true wide field-of-view} capabilities.
+		
+		\item {Milestone 3.2 (Key Project Demonstration):}  Achieve {high-throughput, true wide-field, non-scanning} deep-tissue fluorescent imaging of {multiple fixed, highly scattering biological samples} (e.g., developing embryos, organoids) using the fully integrated advanced system.
+		
+		\item {Milestone 3.3 (Dissemination):} Present key findings at major conferences (e.g., ICCP, Photonics West) and organize the planned course/workshop.
+		
+		\item {Milestone 3.4 (Dissemination \& Outreach):} Complete the final public release of all open-source software, open-hardware designs, and public datasets. Conduct K-12 outreach activities.
+	\end{itemize}
+\end{enumerate}
+
+
+
+
+
+\subsection*{Coordination mechanisms}
+We will conduct weekly research meetings to update all of the collaborators on progress of each activity in the proposal, and to promote cross-fertilization of ideas. We
+expect close collaboration between the graduate students and joint publications
+to ensue from this collaboration. Each individual activity will also hold its
+own research meetings. Students will additionally coordinate independently on their own, as required, to organize experiments and discuss project details.
+
+We plan to continue our current practice of visiting each-other's institutions, and PI Levin is  spending a sabbatical year at Berkeley.  We will additionally hold annual multi-day workshops at Berkeley for the PIs and students to review progress in the project's goals, discuss adjustments and course corrections, and coordinate future directions. The budget includes funding to support travel to the United States and Israel with our students. Our planned dissemination activities will provide us with many additional contact points throughout the year. In particular, we will organize joint PI and student meetings at conferences and workshop we attend, such SPIE Photonics West, ICCP, COSI, as we have already been doing.
+%
+%\begin{figure}[t!]
+%  \begin{center}
+%\vspace{-0.5cm}
+% % \includegraphics[width=0.8\textwidth]{figures/timeline}
+%  \end{center}
+%\vspace{-0.5cm}
+%  \caption{Estimated timeline of proposed work.}\label{fig:timeline}
+%\end{figure}
+%
+%\subsection*{Development and evaluation of theory, optimization software, and imaging algorithms}
+%
+%For the development and evaluation of theoretical results, rendering tools, and imaging algorithms, we will rely on three sources of data. First, simulated measurements of speckle in scattering, created using physically-accurate wave-equation solvers run on either synthetic or acquired physical object models. Second, already existing datasets of physical measurements, captured by the PIs and others. Third, physical measurements newly acquired for the purposes of this project, as described below. We will use this data to thoroughly validate the accuracy of our theoretical and simulation findings, as well as evaluate the performance of new imaging algorithms and fine-tune their hyperparameters (for example, extent and shape of correlation support). For experiments requiring large-scale computation, we will use clusters available at both institutions. We will also extensively use cloud computing services such as AWS EC2, using already-available funds provided through gifts from Amazon.
+%
+%\subsection*{Experimental facilities for optical setups and physical data acquisition} 
+%
+%The team will leverage their existing extensive laboratory facilities at both participating institutions, as well as additional facilities developed using requested funds. We highlight below equipment for specific aspects of the proposed work, and provide additional details in the facilities and funding documents.
+%
+%\boldstart{Material sample fabrication.} PI Gkioulekas' lab has access to wet benches and all the equipment needed to fabricate material samples (``phantoms'') with dfifferent scattering properties. These include ultrasonic mixers for uniformly mixing chemicals, pipettes for accurately injecting material quantities, and vacuum chambers for removing air bubbles. His lab also has access to various chemicals for creating tissue phantoms (silicones, agar, intralipid, titanium dioxide, aluminum oxide), as well as to material samples with ``groundtruth'' optical properties (NIST polydispersions). PI Levin is requesting funds to develop similar capabilities at her lab at Israel. These facilities will be used to create phantoms that will support all aspects of the project. The availability of material fabrication facilities at both institutions will be critical for coordinating experiments and comparing techniques on identical samples, given the difficulty of shipping material samples across countries.
+%
+%\boldstart{Imaging through scattering.} PI Levin's lab includes one vibration-isolated optical table, machine vision cameras, coherent sources, opto-mechanical components (motorized stages, cage mounts, etc.), and a large variety of optical components (filters, polarizers, lenses, etc.). PI Levin is additionally requesting funds to purchase a confocal microscope and associated components required for enabling transmissive imaging configurations. This equipment was used to assemble in PI Levin's lab the far-field imaging prototype shown in \secref{sec:imaging} of the proposal, and will be used to develop the proposed system for near-field imaging through tissue and fluorescence imaging.
+%
+%\boldstart{Material acquisition and analysis.} PI Gkioulekas' lab includes two vibration-isolated optical tables, balanced photodetectors, machine vision cameras, a variety of coherent and incoherent illumination sources, electro-optic, acousto-optic, and spatial light modulators, MEMS mirrors, opto-mechanical equipment (including ultrasonic and nanometer-precision rotation and translation stages), as well as a large array of optical and fiber-optic components (filters, polarizers, lenses, splitters, multiplexers, etc.). A lot of this equipment is tailored to micron-scale imaging. PI Gkioulekas is additionally requesting funds to purchase a tunable-wavelength laser and an ultrafast balanced photodetector. This equipment will be used to develop the optical system proposed in \secref{sec:acquisition} of the proposal for material acquisition.
+%
+%\boldstart{Acquisition of other physical data.} The PIs will use a variety of available equipment to capture physical data (groundtruth optical scattering parameters, images of speckle patterns, and so on) necessary to validate and develop other aspects of the proposal (rendering software, theoretical analysis, imaging algorithms). In addition to the equipment described above, PI Gkioulekas' lab includes three OCT systems (time-domain, spectral-domain, and fiber-based), that can be used to obtain intensity, transient, and spatial-probing measurements of materials at micron resolutions.
